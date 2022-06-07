@@ -57,7 +57,7 @@ jobs:
 
       - name: Run notebooks and build website
         run: |
-          docker run -v ${{ github.workspace }}:/work $${{ env.IMAGE_NAME }}:test jupyter-book build /work/docs -v
+          docker run -v ${{ github.workspace }}:/work ${{ env.IMAGE_NAME }}:test jupyter-book build /work/docs -v
 
       - name: Push Docker Image
         # Do not push on PR's
