@@ -2,7 +2,6 @@
 # Learn more at https://jupyterbook.org/customize/toc.html
 
 format: jb-book
-root: index
+root: cobra_2020_part1
 chapters:
-  - file: markdown
-  - file: plots
+  - file: cobra_2020_part2
