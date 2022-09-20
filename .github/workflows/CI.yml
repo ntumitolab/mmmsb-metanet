@@ -15,67 +15,43 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  PYTHON_VER: '3.10'
 
 jobs:
-  docker:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
-      # Workaround for icorrect digest: https://github.com/docker/build-push-action/issues/461
-      - uses: docker/setup-buildx-action@v2
-
-      - name: Login to the Container registry
-        uses: docker/login-action@v2
+      - name: Setup Python ${{ env.PYTHON_VER }}
+        uses: actions/setup-python@v4
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v4
+          python-version: ${{ env.PYTHON_VER }}
+          cache: 'pip'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Build website
+        run: jupyter-book build docs --warningiserror --keep-going -v
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v2
+      - name: Upload page artifact
+        uses: actions/upload-pages-artifact@v1
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,priority=600, event=pr
-            type=ref,priority=600, event=tag
-            type=raw,value=latest,priority=600, enable=${{ endsWith(github.ref, github.event.repository.default_branch) }}
-            type=sha,enable=true,priority=100,prefix=,suffix=,format=long
-          flavor: |
-            latest=false
+          path: docs/_build/html
 
-      - name: Build Docker Image
-        # if: github.event_name != 'pull_request'
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: .ci/Dockerfile
-          load: true
-          tags: ${{ env.IMAGE_NAME }}:test
-          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-
-      - name: Run notebooks and build website
-        run: |
-          docker run -v ${{ github.workspace }}:/work ${{ env.IMAGE_NAME }}:test jupyter-book build /work/docs -v
-
-      - name: Push Docker Image
-        # Do not push on PR's
-        if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: .ci/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-to: type=inline
-
-      - name: Deploy Website
-        uses: peaceiris/actions-gh-pages@v3.8.0
-        if: github.ref == 'refs/heads/main'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          force_orphan: true
-          publish_dir: docs/_build/html
-          full_commit_message: ${{ github.event.head_commit.message }}
+  # Deployment job
+  deploy:
+    needs: ci
+    if: github.ref == 'refs/heads/main'
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
