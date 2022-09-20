@@ -29,8 +29,11 @@ jobs:
           cache: 'pip'
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Run Notebooks
+        run: |
+          parallel -j2 jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=600 --execute --inplace {} ::: docs/*.ipynb
       - name: Build website
-        run: jupyter-book build docs --warningiserror --keep-going -v
+        run: jupyter-book build docs --keep-going -v
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v2
