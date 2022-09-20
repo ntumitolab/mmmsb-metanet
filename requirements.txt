@@ -1,5 +1,5 @@
+cobra[test]
 matplotlib==3.5.3
-cobra==0.25.0
 numpy==1.23.2
 seaborn==0.12.0
 jupyter-book==0.13.1
