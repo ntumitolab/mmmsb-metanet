@@ -13,9 +13,7 @@ on:
     branches: [main]
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  PYTHON_VER: '3.10'
+  PYTHON_VER: '3.11'
 
 jobs:
   ci:
