@@ -1,4 +1,4 @@
-cobra==0.25.0
+cobra==0.26.0
 matplotlib==3.5.3
 numpy==1.23.2
 seaborn==0.12.1
