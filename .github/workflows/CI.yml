@@ -27,8 +27,8 @@ jobs:
           # cache: 'pip'
       - name: Install dependencies
         run: |
-          pip install -U pip wheel setuptools
-          pip install -r requirements.txt
+          pip install --no-cache-dir -U pip wheel setuptools
+          pip install --no-cache-dir -r requirements.txt
       - name: Run Notebooks
         run: |
           parallel -j2 jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=600 --execute --inplace {} ::: docs/*.ipynb
