@@ -7,8 +7,6 @@ concurrency:
 on:
   push:
     branches: [main]
-    # Publish semver tags as releases.
-    tags: ["*.*"]
   pull_request:
     branches: [main]
 
@@ -27,13 +25,12 @@ jobs:
           # cache: 'pip'
       - name: Install dependencies
         run: |
-          pip install --no-cache-dir -U pip wheel setuptools
           pip install --no-cache-dir -r requirements.txt
       - name: Run Notebooks
         run: |
           parallel -j2 jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=600 --execute --inplace {} ::: docs/*.ipynb
       - name: Build website
-        run: jupyter-book build docs --keep-going -vvv
+        run: jupyter-book build docs --keep-going -v
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v2
