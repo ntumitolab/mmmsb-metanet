@@ -28,7 +28,8 @@ jobs:
           pip install --no-cache-dir -r requirements.txt
       - name: Run Notebooks
         run: |
-          parallel -j1 jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=600 --execute --inplace {} ::: docs/*.ipynb
+          parallel --joblog /tmp/log -j1 jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=600 --execute --inplace {} ::: docs/*.ipynb
+          cat /tmp/log
       - name: Build website
         run: jupyter-book build docs --keep-going -v
       - name: Setup Pages
