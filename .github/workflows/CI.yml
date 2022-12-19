@@ -7,8 +7,6 @@ concurrency:
 on:
   push:
     branches: [main]
-    # Publish semver tags as releases.
-    tags: ["*.*"]
   pull_request:
     branches: [main]
 
@@ -24,14 +22,16 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PYTHON_VER }}
-          # cache: 'pip'
+          cache: 'pip'
       - name: Install dependencies
         run: |
-          pip install --no-cache-dir -U pip wheel setuptools
-          pip install --no-cache-dir -r requirements.txt
-      - name: Run Notebooks
-        run: |
-          parallel -j2 jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=600 --execute --inplace {} ::: docs/*.ipynb
+          pip install -r requirements.txt
+      - name: Cache Notebooks
+        id: cache-notebooks
+        uses: actions/cache@v3
+        with:
+          path: _build/.jupyter_cache/
+          key: ${{ runner.os }}-py${{ env.PYTHON_VER }}-${{ hashFiles('**/requirements.txt') }}
       - name: Build website
         run: jupyter-book build docs --keep-going -v
       - name: Setup Pages
