@@ -7,6 +7,7 @@ copyright: "2022" # Copyright year to be placed in the footer
 # logo: logo.png
 
 exclude_patterns: []
+only_build_toc_files: true
 
 # See https://jupyterbook.org/content/execute.html
 execute:
