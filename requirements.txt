@@ -6,3 +6,4 @@ jupyter-book==0.13.1
 # pytest==7.1.3
 optlang==1.6.1
 ipython==8.7.0
+Pygments==2.13.0
