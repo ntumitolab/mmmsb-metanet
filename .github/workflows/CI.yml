@@ -13,6 +13,7 @@ concurrency:
 env:
   PYTHON_VER: '3.11'
   TIMEOUT: '600'
+  JOBS: 1
 
 jobs:
   ci:
@@ -38,13 +39,10 @@ jobs:
         if: steps.cache-virtualenv.outputs.cache-hit != 'true'
       - name: Run notebooks
         run: |
-          parallel --joblog /tmp/log -j1 jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=${{ env.TIMEOUT }} --execute --inplace {} ::: docs/*.ipynb
+          parallel --joblog /tmp/log -j${JOBS} jupyter nbconvert --to notebook --ExecutePreprocessor.timeout=${{ env.TIMEOUT }} --execute --inplace {} ::: docs/*.ipynb
           cat /tmp/log
       - name: Build website
         run: jupyter-book build docs/ --keep-going -v
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v2
       - name: Upload page artifact
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@v1
