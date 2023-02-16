@@ -1,5 +1,5 @@
 cobra==0.26.2
-matplotlib==3.6.3
+matplotlib==3.7.0
 numpy==1.23.5
 seaborn==0.12.2
 jupyter-book==0.13.1
