@@ -12,22 +12,18 @@ jobs:
   linkcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Setup Python ${{ env.PYTHON_VER }}
         uses: actions/setup-python@v4
         id: python
         with:
           python-version: ${{ env.PYTHON_VER }}
-      - uses: syphar/restore-virtualenv@v1
-        id: cache-virtualenv
+      - name: Setup Jupyter book
+        run: pip install jupyter-book
+      - name: Disable code cell execution
+        uses: mikefarah/yq@master
         with:
-          requirement_files: requirements.txt  # this is optional
-      - uses: syphar/restore-pip-download-cache@v1
-        if: steps.cache-virtualenv.outputs.cache-hit != 'true'
-        # the package installation will only be executed when the
-        # requirements-files have changed.
-      - name: Install Python dependencies
-        run: pip install -r requirements.txt
-        if: steps.cache-virtualenv.outputs.cache-hit != 'true'
+          cmd: yq -i '.execute.execute_notebooks = "off"' 'docs/_config.yml'
       - name: Check Links
         run: jupyter-book build docs/ --builder linkcheck
