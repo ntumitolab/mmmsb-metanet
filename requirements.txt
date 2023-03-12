@@ -1,6 +1,7 @@
 cobra==0.26.2
 matplotlib==3.7.1
-numpy==1.24.2
+# numpy==1.23.5
 seaborn==0.12.2
 jupyter-book==0.15.0
 optlang==1.6.1
+ipykernel==6.21.3
