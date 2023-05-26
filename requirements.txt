@@ -1,5 +1,5 @@
 cobra==0.26.3
 seaborn==0.12.2
 jupyter-book==0.15.1
-optlang==1.6.1
+optlang==1.7.0
 ipykernel==6.23.1
